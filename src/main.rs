@@ -13,17 +13,15 @@ struct Server {
 impl Handler for Server {
 
     fn on_open(&mut self, _: Handshake) -> Result<()> {
-        // We have a new connection, so we increment the connection counter
         println!("The client has connected");
         Ok(self.count.set(self.count.get() + 1))
     }
 
     fn on_message(&mut self, msg: Message) -> Result<()> {
-        // Tell the user the current count
         println!("The number of live connections is {}", self.count.get());
 
-        // Echo the message back
-        self.out.send(msg)
+        // Echo the message to all connected clients
+        self.out.broadcast(msg)
     }
 
     fn on_close(&mut self, code: CloseCode, reason: &str) {
@@ -35,7 +33,6 @@ impl Handler for Server {
             _ => println!("The client encountered an error: {}", reason),
         }
 
-        // The connection is going down, so we need to decrement the count
         self.count.set(self.count.get() - 1)
     }
 
@@ -46,10 +43,6 @@ impl Handler for Server {
 }
 
 fn main() {
-  // Cell gives us interior mutability so we can increment
-  // or decrement the count between handlers.
-  // Rc is a reference-counted box for sharing the count between handlers
-  // since each handler needs to own its contents.
   let count = Rc::new(Cell::new(0));
   listen("127.0.0.1:3012", |out| { Server { out: out, count: count.clone() } }).unwrap()
 }
