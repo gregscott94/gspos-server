@@ -4,4 +4,5 @@ version = "0.1.0"
 authors = ["OldGreg <flyers08@vt.edu>"]
 
 [dependencies]
-ws = '*'
+ws = "*"
+nickel = "*"
