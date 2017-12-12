@@ -1,25 +1,20 @@
 extern crate ws;
 
-use std::rc::Rc;
-use std::cell::Cell;
+use std::thread;
 
 use ws::{listen, Handler, Sender, Result, Message, Handshake, CloseCode, Error};
 
 struct Server {
     out: Sender,
-    count: Rc<Cell<u32>>,
 }
 
 impl Handler for Server {
 
     fn on_open(&mut self, _: Handshake) -> Result<()> {
-        println!("The client has connected");
-        Ok(self.count.set(self.count.get() + 1))
+        Ok(println!("The client has connected"))
     }
 
     fn on_message(&mut self, msg: Message) -> Result<()> {
-        println!("The number of live connections is {}", self.count.get());
-
         // Echo the message to all connected clients
         self.out.broadcast(msg)
     }
@@ -32,8 +27,6 @@ impl Handler for Server {
                 "Closing handshake failed! Unable to obtain closing status from client."),
             _ => println!("The client encountered an error: {}", reason),
         }
-
-        self.count.set(self.count.get() - 1)
     }
 
     fn on_error(&mut self, err: Error) {
@@ -43,6 +36,13 @@ impl Handler for Server {
 }
 
 fn main() {
-  let count = Rc::new(Cell::new(0));
-  listen("127.0.0.1:3012", |out| { Server { out: out, count: count.clone() } }).unwrap()
+  let ws_server = thread::Builder::new().name("ws_server".to_string()).spawn(move || {
+      listen("127.0.0.1:3012", |out| { Server { out: out } }).unwrap()
+  }).unwrap();
+  let app_router = thread::Builder::new().name("app_router".to_string()).spawn(move || {
+      println!("Router")
+  }).unwrap();
+  let _ = ws_server.join();
+  let _ = app_router.join();
+  println!("Server closing down..");
 }
