@@ -1,11 +1,3 @@
-[root]
-name = "gspos-server"
-version = "0.1.0"
-dependencies = [
- "nickel 0.10.1 (registry+https://github.com/rust-lang/crates.io-index)",
- "ws 0.7.3 (registry+https://github.com/rust-lang/crates.io-index)",
-]
-
 [[package]]
 name = "aho-corasick"
 version = "0.6.4"
@@ -67,6 +59,14 @@ dependencies = [
 name = "groupable"
 version = "0.2.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
+
+[[package]]
+name = "gspos-server"
+version = "0.1.0"
+dependencies = [
+ "nickel 0.10.1 (registry+https://github.com/rust-lang/crates.io-index)",
+ "ws 0.7.3 (registry+https://github.com/rust-lang/crates.io-index)",
+]
 
 [[package]]
 name = "httparse"

@@ -8,6 +8,8 @@ use std::env;
 use ws::{listen, Handler, Sender, Result, Message, Handshake, CloseCode, Error};
 use nickel::{Nickel, Mountable, StaticFilesHandler};
 
+mod youtube;
+
 struct Server {
     out: Sender,
 }
